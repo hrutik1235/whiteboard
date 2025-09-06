@@ -10,14 +10,6 @@ const OnboardingUser = () => {
   const navigate = useNavigate();
 
   const onSubmit = () => {
-    console.log(name, room);
-
-    // socket.emit("join-room", {
-    //   name: name,
-    //   room: room,
-    //   color: color,
-    // });
-
     navigate(`/${room}`, {
       state: {
         name: name,

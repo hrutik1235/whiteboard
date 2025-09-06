@@ -8,6 +8,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <OnboardingUser />,
+    index: true,
   },
   {
     path: "/:room",

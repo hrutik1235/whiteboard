@@ -7,12 +7,16 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // allow all clients
+    origin: "*",
   },
 });
 
 const usersData = {};
 const roomsDrawing = {};
+
+app.get("/", (req, res) => {
+  res.send("<h1>Hello world</h1>");
+});
 
 io.on("connection", (socket) => {
   console.log("a user connected:", socket.id);
@@ -104,6 +108,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => {
-  console.log("Socket server running on http://localhost:4000");
+server.listen(4000, "0.0.0.0", () => {
+  console.log("Server running at http://0.0.0.0:4000");
 });

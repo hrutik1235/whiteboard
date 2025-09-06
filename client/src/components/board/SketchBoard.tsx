@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { socket } from "../../socket";
 import { useParams, useLocation } from "react-router-dom";
@@ -37,7 +37,11 @@ const SketchBoard = () => {
       canvasRef.current.clearCanvas();
     });
 
-    socket.emit("join-room", { room, name: state.name, color: state.color });
+    socket.emit("join-room", {
+      room,
+      name: state?.name || "Guest",
+      color: state?.color || "#000000",
+    });
 
     return () => {
       socket.off("init-draw");
@@ -67,7 +71,7 @@ const SketchBoard = () => {
         ref={canvasRef}
         style={styles}
         strokeWidth={3}
-        strokeColor={state.color}
+        strokeColor={state?.color || "#000000"}
         onStroke={handleStroke}
       />
       <button
