@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { socket } from "../../socket";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 const styles = {
   width: "90vw",
@@ -12,29 +12,40 @@ const styles = {
 const SketchBoard = () => {
   const canvasRef = useRef<any>(null);
   const { room } = useParams();
+  const location = useLocation();
+
+  const [activeUsers, setActiveUsers] = useState([]);
+
+  const { state } = location;
 
   useEffect(() => {
-    // if (!canvasRef.current) return;
+    if (!canvasRef.current) return;
 
-    socket.on("draw", (data) => {
-      if (data && data.length > 0) {
+    socket.on("init-draw", (data) => {
+      if (canvasRef.current && data && data.length > 0) {
         canvasRef.current.loadPaths(data);
       }
     });
 
-    socket.on("join-room", (data) => {
-      console.log("Joined Room Data", data);
-    });
-
-    socket.on("active-users", (data) => {
-      console.log("Active Users Data", data);
+    socket.on("draw", (stroke) => {
+      if (canvasRef.current && stroke) {
+        canvasRef.current.loadPaths([stroke]);
+      }
     });
 
     socket.on("clear", () => {
       canvasRef.current.clearCanvas();
     });
 
+    socket.on("active-users", (data) => {
+      console.log("Active Users Data", data);
+      setActiveUsers(data);
+    });
+
+    socket.emit("join-room", { room, name: state.name, color: state.color });
+
     return () => {
+      socket.off("init-draw");
       socket.off("draw");
       socket.off("clear");
       socket.off("active-users");
@@ -42,22 +53,17 @@ const SketchBoard = () => {
   }, [room]);
 
   const handleStroke = async () => {
+    if (!canvasRef.current) return;
     const paths = await canvasRef.current.exportPaths();
-    if (room) {
-      socket.emit("draw", { paths, room });
-    } else {
-      socket.emit("draw", paths);
+    const lastStroke = paths[paths.length - 1];
+    if (lastStroke) {
+      socket.emit("draw", { stroke: lastStroke, room });
     }
   };
 
   const clearBoard = () => {
     canvasRef.current.clearCanvas();
-
-    if (room) {
-      socket.emit("clear", room);
-    } else {
-      socket.emit("clear");
-    }
+    socket.emit("clear", room);
   };
 
   return (

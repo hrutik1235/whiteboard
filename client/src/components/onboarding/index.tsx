@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { socket } from "../../socket";
+// import { socket } from "../../socket";
 import { useNavigate } from "react-router-dom";
 
 const OnboardingUser = () => {
@@ -12,13 +12,18 @@ const OnboardingUser = () => {
   const onSubmit = () => {
     console.log(name, room);
 
-    socket.emit("join-room", {
-      name: name,
-      room: room,
-      color: color,
-    });
+    // socket.emit("join-room", {
+    //   name: name,
+    //   room: room,
+    //   color: color,
+    // });
 
-    navigate(`/${room}`);
+    navigate(`/${room}`, {
+      state: {
+        name: name,
+        color: color,
+      },
+    });
   };
 
   return (

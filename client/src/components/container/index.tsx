@@ -14,6 +14,7 @@ const Container = () => {
       </div>
       <div className="w-[90%] h-[90%] m-auto mt-[1%] bg-white">
         {/* <Board /> */}
+
         <SketchBoard />
         <div className="border-t border-red-400">
           <h1 className="text-2xl text-blue-300">Hellow </h1>

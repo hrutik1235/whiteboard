@@ -19,18 +19,20 @@ io.on("connection", (socket) => {
 
   socket.on("draw", (data) => {
     if (data.room) {
-      socket.broadcast.to(data.room).emit("draw", data.paths);
+      socket.broadcast.to(data.room).emit("draw", data.stroke);
+
       roomsDrawing[data.room] = [
         ...(roomsDrawing[data.room] || []),
-        ...data.paths,
+        data.stroke,
       ];
     } else {
-      socket.broadcast.emit("draw", data);
+      socket.broadcast.emit("draw", data.stroke);
     }
   });
 
   socket.on("clear", (roomId) => {
     if (roomId) {
+      roomsDrawing[roomId] = [];
       socket.broadcast.to(roomId).emit("clear");
     } else {
       socket.broadcast.emit("clear");
@@ -45,13 +47,11 @@ io.on("connection", (socket) => {
     socket.join(room.room);
 
     if (roomsDrawing[room.room]) {
-      socket.emit("draw", roomsDrawing[room.room]);
+      socket.emit("init-draw", roomsDrawing[room.room]);
     }
 
     const clients = await io.in(room.room).allSockets();
     const userCount = clients.size;
-
-    // socket.to(socket.id).emit("draw", roomsDrawing[room.room]);
 
     usersData[room.room] = {
       count: userCount,
@@ -85,10 +85,6 @@ io.on("connection", (socket) => {
     const rooms = [...socket.rooms].filter((r) => r !== socket.id);
 
     for (const roomId of rooms) {
-      // Get all sockets still in this room (before the user leaves)
-      const clients = await io.in(roomId).allSockets();
-
-      // Remove this socket manually from your usersData
       if (usersData[roomId]) {
         usersData[roomId].users = usersData[roomId].users.filter(
           (user) => user.id !== socket.id
