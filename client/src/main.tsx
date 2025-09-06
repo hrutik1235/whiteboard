@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import SketchBoard from "./components/board/SketchBoard.tsx";
 import OnboardingUser from "./components/onboarding/index.tsx";
+import Container from "./components/container/index.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/:room",
-    element: <SketchBoard />,
+    element: <Container />,
   },
 ]);
 

@@ -14,7 +14,7 @@ const SketchBoard = () => {
   const { room } = useParams();
   const location = useLocation();
 
-  const [activeUsers, setActiveUsers] = useState([]);
+  //   const [activeUsers, setActiveUsers] = useState([]);
 
   const { state } = location;
 
@@ -35,11 +35,6 @@ const SketchBoard = () => {
 
     socket.on("clear", () => {
       canvasRef.current.clearCanvas();
-    });
-
-    socket.on("active-users", (data) => {
-      console.log("Active Users Data", data);
-      setActiveUsers(data);
     });
 
     socket.emit("join-room", { room, name: state.name, color: state.color });
@@ -67,17 +62,17 @@ const SketchBoard = () => {
   };
 
   return (
-    <div>
+    <div className="relative">
       <ReactSketchCanvas
         ref={canvasRef}
         style={styles}
         strokeWidth={3}
-        strokeColor="red"
+        strokeColor={state.color}
         onStroke={handleStroke}
       />
       <button
         onClick={clearBoard}
-        className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded"
+        className="absolute top-1 left-1 bg-red-500 text-white px-3 py-1 rounded"
       >
         Clear
       </button>
